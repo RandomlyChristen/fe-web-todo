@@ -8,6 +8,7 @@ import NotificationManager from "./core/NotificationManager.js";
 
 class App extends Component {
     initialize() {
+	console.log('from hoony');
         this.initializeDragFeature();
         this.initializeNotificationFeature();
     }
