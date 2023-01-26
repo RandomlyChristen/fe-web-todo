@@ -43,6 +43,7 @@
     text-align: right;
     margin: 50px 50px 10px 0;
     width: 350px;
+    overflow: visible;
 }
 
 #sidebar_close_btn {
