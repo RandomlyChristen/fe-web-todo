@@ -55,8 +55,8 @@ class App extends Component {
     addColumn() {
         TodoDatabase.postColumn({ name: 'New Column' }).then(column => {
             const $article = this.$target.querySelector('#article');
-            $article.innerHTML +=
-                `<div data-component="TodoHolder" data-column-id="${column.id}"></div>`
+            $article.insertAdjacentHTML('beforeend',
+                `<div data-component="TodoHolder" data-column-id="${column.id}"></div>`);
             const $todoHolder = $article.querySelector(`[data-column-id="${column.id}"]`);
             new TodoHolder($todoHolder, { column });
             ToastManager.show('새로운 칼럼을 추가했습니다.', 1000);
