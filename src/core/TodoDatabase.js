@@ -125,6 +125,17 @@ const postNotification = async (notification) => {
     return await newNotificationRes.json();
 };
 
+/**
+ * @param {NotificationEntity} notification
+ * @returns {Promise<any>}
+ */
+const deleteNotification = async (notification) => {
+    const deleteNotificationRes = await fetch(`${NOTIFICATION_URI}/${notification.id}`, {
+        method: 'DELETE'
+    });
+    return await deleteNotificationRes.json();
+}
+
 const patchCollection = async (collection) => {
     if (collection.columns?.length) {
         collection.columns?.forEach(column => {
@@ -182,6 +193,7 @@ const TodoDatabase = {
     patchTodo: pendingWrapper(patchTodo),
     getNotifications: pendingWrapper(getNotifications),
     postNotification: pendingWrapper(postNotification),
+    deleteNotification: pendingWrapper(deleteNotification),
     patchCollection: pendingWrapper(patchCollection)
 }
 

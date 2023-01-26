@@ -87,6 +87,22 @@
     z-index: 98;
 }
 
+#sidebar_trash_btn {
+    border: none;
+    background: transparent;
+    width: 300px;
+}
+
 .sidebar-opened #sidebar_bgbtn {
     width: 100% !important;
+}
+
+.slide-out {
+    animation: slide-out-animation 0.5s cubic-bezier(0.85, 0, 1, 1);
+    animation-fill-mode: forwards;
+}
+
+@keyframes slide-out-animation {
+    from { transform: translateX(0); opacity: 1 }
+    to { transform: translateX(150%); opacity: 0 }
 }
