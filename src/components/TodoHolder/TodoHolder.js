@@ -1,5 +1,5 @@
 import Component from "../../core/Component.js";
-import TodoDatabase from "../../persistance/TodoDatabase.js";
+import TodoDatabase from "../../core/TodoDatabase.js";
 import TodoCard from "../TodoCard/TodoCard.js";
 import DoubleClickInput from "../DoubleClickInput/DoubleClickInput.js";
 import TodoAddForm from "../TodoAddForm/TodoAddForm.js";
@@ -30,10 +30,10 @@ class TodoHolder extends Component {
     }
 
     mounted() {
-        this.mountTodoCounter();
         this.mountColumnNameInput();
         this.mountAddForm();
-        this.mountTodoCards();
+        this.mountTodoCounter().catch(console.error);
+        this.mountTodoCards().catch(console.error);
     }
 
     async mountTodoCounter() {
@@ -90,7 +90,6 @@ class TodoHolder extends Component {
         const newTodo = await TodoDatabase.postTodo({ name, description });
         const newTodoIds = (await TodoDatabase.getColumns({ id: column.id }))[0].todoIds;
         newTodoIds.unshift(newTodo.id);
-        console.log(newTodoIds)
         column = await TodoDatabase.patchColumn({ id: column.id, todoIds: newTodoIds });
 
         const $actualHolder = this.$target.querySelector('.todoholder-actual');
@@ -99,8 +98,8 @@ class TodoHolder extends Component {
         new TodoCard($actualHolder.firstElementChild, { todo: newTodo, $actualHolder, onTodoMoved: this.onTodoMoved.bind(this) });
 
         this.toggleAddForm();
-        this.mountTodoCounter();
         this.notifyAddTodo(newTodo, column.name);
+        this.mountTodoCounter().catch(console.error);
     }
 
     notifyAddTodo(todo, columnName) {
@@ -113,7 +112,8 @@ class TodoHolder extends Component {
 
     updateColumnName(newName) {
         const { column } = this.props;
-        TodoDatabase.patchColumn({ id: column.id, name: newName });
+        TodoDatabase.patchColumn({ id: column.id, name: newName })
+            .catch(console.error);
     }
 
     async onTodoMoved() {

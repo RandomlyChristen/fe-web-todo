@@ -60,7 +60,7 @@ const DragManager = {
         }
     },
 
-    __mouseupEventListener(e) {
+    __mouseupEventListener() {
         const dragEvent = new MyDragEvent(
             DragManager.dragEventTypes.END,
             this.$dragstartComponent,

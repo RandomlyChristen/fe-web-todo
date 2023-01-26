@@ -2,7 +2,7 @@ import Component from "./core/Component.js";
 import Header from "./components/Header/Header.js";
 import AddColumnButton from "./components/AddColumnButton/AddColumnButton.js";
 import TodoHolder from "./components/TodoHolder/TodoHolder.js";
-import TodoDatabase from "./persistance/TodoDatabase.js";
+import TodoDatabase from "./core/TodoDatabase.js";
 import DragManager from "./core/DragManager.js";
 import NotificationManager from "./core/NotificationManager.js";
 import LongClickManager from "./core/LongClickManager.js";
@@ -13,15 +13,6 @@ class App extends Component {
         this.initializeDragFeature();
         this.initializeNotificationFeature();
         this.initializeLongCLickFeature();
-        // this.addEvent(LongClickManager.longClickEventTypes.START, '*', ({ target }) => {
-        //     ToastManager.show('longclick start', 1000);
-        // });
-        // this.addEvent(LongClickManager.longClickEventTypes.CANCELED, '*', ({ target }) => {
-        //     ToastManager.show('longclick canceled', 1000);
-        // });
-        // this.addEvent(LongClickManager.longClickEventTypes.END, '*', ({ target }) => {
-        //     ToastManager.show('longclick end', 1000);
-        // });
     }
 
     template() {
@@ -35,7 +26,7 @@ class App extends Component {
     mounted() {
         this.mountAddColumnButton();
         this.mountHeader();
-        this.mountTodoHolders();
+        this.mountTodoHolders().catch(console.error);
     }
 
     mountHeader() {

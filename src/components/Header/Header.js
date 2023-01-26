@@ -1,6 +1,6 @@
 import Component from "../../core/Component.js";
 import NotificationCard from "../NotificationCard/NotificationCard.js";
-import TodoDatabase from "../../persistance/TodoDatabase.js";
+import TodoDatabase from "../../core/TodoDatabase.js";
 import NotificationManager from "../../core/NotificationManager.js";
 
 class Header extends Component {

@@ -25,7 +25,7 @@ const LongClickManager = {
         }
     },
 
-    __mouseupEventListener(e) {
+    __mouseupEventListener() {
         this.isMouseDown = false;
     },
 

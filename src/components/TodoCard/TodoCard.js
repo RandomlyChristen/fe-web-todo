@@ -1,5 +1,5 @@
 import Component from "../../core/Component.js";
-import TodoDatabase from "../../persistance/TodoDatabase.js";
+import TodoDatabase from "../../core/TodoDatabase.js";
 import DragManager from "../../core/DragManager.js";
 import NotificationManager from "../../core/NotificationManager.js";
 import LongClickManager from "../../core/LongClickManager.js";
@@ -71,9 +71,9 @@ class TodoCard extends Component {
 
         await TodoDatabase.patchCollection(collection);
         if (this.$target === $dragStart && srcColumnId !== dstColumnId) {
-            this.notifyMoved(srcTodoId, srcColumnId, dstColumnId).catch(console.log);
+            this.notifyMoved(srcTodoId, srcColumnId, dstColumnId).catch(console.error);
         }
-        this.props.onTodoMoved();
+        this.props.onTodoMoved().catch(console.error);
     }
 
     async notifyMoved(srcTodoId, srcColumnId, dstColumnId) {
@@ -113,7 +113,7 @@ class TodoCard extends Component {
         await TodoDatabase.patchColumn({ id: column.id, todoIds: column.todoIds });
         await TodoDatabase.deleteTodo({ id: todo.id });
         this.notifyDelete(todo.name, column.name);
-        this.props.onTodoMoved();
+        this.props.onTodoMoved().catch(console.error);
     }
 
     template() {
@@ -201,7 +201,7 @@ class TodoCard extends Component {
     }
     endLongclick() {
         this.$target.querySelector(".progress-click").classList.remove("on");
-        this.deleteTodo();
+        this.deleteTodo().catch(console.error);
         ToastManager.show('삭제되었습니다', 1000);
     }
 }
