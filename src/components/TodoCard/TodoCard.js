@@ -2,6 +2,8 @@ import Component from "../../core/Component.js";
 import TodoDatabase from "../../persistance/TodoDatabase.js";
 import DragManager from "../../core/DragManager.js";
 import NotificationManager from "../../core/NotificationManager.js";
+import LongClickManager from "../../core/LongClickManager.js";
+import ToastManager from "../../core/ToastManager.js";
 
 class TodoCard extends Component {
     initialize() {
@@ -20,6 +22,10 @@ class TodoCard extends Component {
         this.addEvent('click', '.todocard-bgbtn', this.cancelEdit.bind(this));
         this.addEvent(DragManager.dragEventTypes.COLLAPSED, '*', this.onCollapsed.bind(this));
         this.addEvent(DragManager.dragEventTypes.END, '*', this.onDragEnded.bind(this));
+        this.addEvent('mousedown', '.todocard-delete', this.shortclick.bind(this));
+        this.addEvent(LongClickManager.longClickEventTypes.START, '.todocard-delete', this.startLongclick.bind(this));
+        this.addEvent(LongClickManager.longClickEventTypes.CANCELED, '.todocard-delete', this.cancelLongclick.bind(this));
+        this.addEvent(LongClickManager.longClickEventTypes.END, '.todocard-delete', this.endLongclick.bind(this));
     }
 
     onCollapsed(e) {
@@ -33,7 +39,7 @@ class TodoCard extends Component {
         const $lastCollapsed = e.lastCollapsedElement;
 
         const srcTodoId = parseInt($dragStart.dataset.todoId);
-        const srcColumnId = parseInt($dragStart.dataset.columnId)
+        const srcColumnId = parseInt($dragStart.dataset.columnId);
         const dstTodoId = parseInt($lastCollapsed.dataset.todoId);
         const dstColumnId = parseInt($lastCollapsed.dataset.columnId);
 
@@ -63,12 +69,11 @@ class TodoCard extends Component {
             collection.columns.push({ id: dstColumn.id, todoIds: dstColumn.todoIds });
         }
 
-        console.log(await TodoDatabase.patchCollection(collection));
-        this.props.onTodoMoved();
-
+        await TodoDatabase.patchCollection(collection);
         if (this.$target === $dragStart && srcColumnId !== dstColumnId) {
-            this.notifyMoved(srcTodoId, srcColumnId, dstColumnId).then(console.log);
+            this.notifyMoved(srcTodoId, srcColumnId, dstColumnId).catch(console.log);
         }
+        this.props.onTodoMoved();
     }
 
     async notifyMoved(srcTodoId, srcColumnId, dstColumnId) {
@@ -91,12 +96,33 @@ class TodoCard extends Component {
         });
     }
 
+    notifyDelete(todoName, columnName) {
+        return NotificationManager.makeNotification({
+            type: NotificationManager.notificationTypes.DELETE,
+            from: columnName,
+            name: todoName
+        });
+    }
+
+    async deleteTodo() {
+        const { todo } = this.state;
+        const columnId = parseInt(this.$target.dataset.columnId);
+        const column = (await TodoDatabase.getColumns({ id: columnId }))[0];
+        const pos = column.todoIds.findIndex(id => id === todo.id);
+        column.todoIds.splice(pos, 1);
+        await TodoDatabase.patchColumn({ id: column.id, todoIds: column.todoIds });
+        await TodoDatabase.deleteTodo({ id: todo.id });
+        this.notifyDelete(todo.name, column.name);
+        this.props.onTodoMoved();
+    }
+
     template() {
         if (this.isDummy())
             return '';
         const { todo, isEdit } = this.state;
         return `
         <button class="todocard-bgbtn"></button>
+        <div class="progress-click"></div>
         <div class="todocard-dblclick-area">
             <div class="todocard-header">
                 ${isEdit ?
@@ -162,6 +188,21 @@ class TodoCard extends Component {
     setDraggable() {
         if (this.isDummy())
             this.$target.classList.add(DragManager.BLOCK_DRAG_CLASS);
+    }
+    
+    shortclick() {
+        ToastManager.show('삭제하려면 꾹 누르세요', 1000);
+    }
+    startLongclick() {
+        this.$target.querySelector(".progress-click").classList.add("on");
+    }
+    cancelLongclick() {
+        this.$target.querySelector(".progress-click").classList.remove("on");
+    }
+    endLongclick() {
+        this.$target.querySelector(".progress-click").classList.remove("on");
+        this.deleteTodo();
+        ToastManager.show('삭제되었습니다', 1000);
     }
 }
 

@@ -7,7 +7,7 @@ import NotificationManager from "../../core/NotificationManager.js";
 
 class TodoHolder extends Component {
     initialize() {
-        this.addEvent('click', '.add-todo-btn', this.toogleAddForm.bind(this));
+        this.addEvent('click', '.add-todo-btn', this.toggleAddForm.bind(this));
     }
 
     template() {
@@ -66,7 +66,7 @@ class TodoHolder extends Component {
         $todoCards.forEach($todoCard => {
             const todoId = parseInt($todoCard.dataset.todoId);
             const todo = todos.find(todo => todo.id === todoId) || { id: -1, columnId: column.id };
-            new TodoCard($todoCard, { todo, $actualHolder, onTodoMoved: this.updateMovedTodo.bind(this) });
+            new TodoCard($todoCard, { todo, $actualHolder, onTodoMoved: this.onTodoMoved.bind(this) });
         });
     }
 
@@ -74,11 +74,11 @@ class TodoHolder extends Component {
         const $todoAddForm = this.$target.querySelector('[data-component="TodoAddForm"]');
         new TodoAddForm($todoAddForm, {
             addTodo: this.addTodo.bind(this),
-            addCancel: this.toogleAddForm.bind(this)
+            addCancel: this.toggleAddForm.bind(this)
         });
     }
 
-    toogleAddForm() {
+    toggleAddForm() {
         const $addForm = this.$target.querySelector('[data-component="TodoAddForm"]');
         const checked = !$addForm.toggleAttribute('hidden');
         const $button = this.$target.querySelector('.add-todo-btn');
@@ -90,15 +90,16 @@ class TodoHolder extends Component {
         const newTodo = await TodoDatabase.postTodo({ name, description });
         const newTodoIds = (await TodoDatabase.getColumns({ id: column.id }))[0].todoIds;
         newTodoIds.unshift(newTodo.id);
+        console.log(newTodoIds)
         column = await TodoDatabase.patchColumn({ id: column.id, todoIds: newTodoIds });
 
         const $actualHolder = this.$target.querySelector('.todoholder-actual');
         $actualHolder.insertAdjacentHTML('afterbegin',
             `<div data-component="TodoCard" data-todo-id="${newTodo.id}" data-column-id="${column.id}"></div>`);
-        new TodoCard($actualHolder.firstElementChild, { todo: newTodo, $actualHolder, onTodoMoved: this.updateMovedTodo.bind(this) });
+        new TodoCard($actualHolder.firstElementChild, { todo: newTodo, $actualHolder, onTodoMoved: this.onTodoMoved.bind(this) });
 
-        this.toogleAddForm();
-
+        this.toggleAddForm();
+        this.mountTodoCounter();
         this.notifyAddTodo(newTodo, column.name);
     }
 
@@ -115,9 +116,9 @@ class TodoHolder extends Component {
         TodoDatabase.patchColumn({ id: column.id, name: newName });
     }
 
-    updateMovedTodo() {
-        this.mountTodoCards();
-        this.mountTodoCounter();
+    async onTodoMoved() {
+        await this.mountTodoCards();
+        await this.mountTodoCounter();
     }
 }
 

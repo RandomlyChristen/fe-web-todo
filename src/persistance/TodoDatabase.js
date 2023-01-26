@@ -80,6 +80,17 @@ const postTodo = async (todo) => {
 
 /**
  * @param {TodoEntity} todo
+ * @returns {Promise<any>}
+ */
+const deleteTodo = async (todo) => {
+    const deleteTodoRes = await fetch(`${TODO_URI}/${todo.id}`, {
+        method: 'DELETE'
+    });
+    return await deleteTodoRes.json();
+}
+
+/**
+ * @param {TodoEntity} todo
  * @returns {Promise<TodoEntity>}
  */
 const patchTodo = async (todo) => {
@@ -141,16 +152,37 @@ const getQueryString = (data) => {
     return '?' + (data.author ? `&author=${data.author}` : '');
 }
 
+let nPendingWorker = 0;
+
+const pendingWrapper = (asyncFunc) => {
+    return (...args) => new Promise((resolve, reject) => {
+        if (!nPendingWorker) {
+            document.body.classList.add('pending');
+        }
+        ++nPendingWorker;
+        asyncFunc(...args)
+        .then(resolve)
+        .catch(reject)
+        .finally(() => {
+            --nPendingWorker;
+            if (!nPendingWorker) {
+                document.body.classList.remove('pending');
+            }
+        });
+    });
+};
+
 const TodoDatabase = {
-    getColumns,
-    postColumn,
-    patchColumn,
-    getTodos,
-    postTodo,
-    patchTodo,
-    getNotifications,
-    postNotification,
-    patchCollection
+    getColumns: pendingWrapper(getColumns),
+    postColumn: pendingWrapper(postColumn),
+    patchColumn: pendingWrapper(patchColumn),
+    getTodos: pendingWrapper(getTodos),
+    postTodo: pendingWrapper(postTodo),
+    deleteTodo: pendingWrapper(deleteTodo),
+    patchTodo: pendingWrapper(patchTodo),
+    getNotifications: pendingWrapper(getNotifications),
+    postNotification: pendingWrapper(postNotification),
+    patchCollection: pendingWrapper(patchCollection)
 }
 
 export default TodoDatabase;

@@ -3,4 +3,5 @@
 test
 design
 node_modules
+.prettierignore
 server/mock.json

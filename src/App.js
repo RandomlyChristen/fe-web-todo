@@ -13,15 +13,15 @@ class App extends Component {
         this.initializeDragFeature();
         this.initializeNotificationFeature();
         this.initializeLongCLickFeature();
-        this.addEvent(LongClickManager.longClickEventTypes.START, '*', ({ target }) => {
-            ToastManager.show('longclick start', 1000);
-        });
-        this.addEvent(LongClickManager.longClickEventTypes.CANCELED, '*', ({ target }) => {
-            ToastManager.show('longclick canceled', 1000);
-        });
-        this.addEvent(LongClickManager.longClickEventTypes.END, '*', ({ target }) => {
-            ToastManager.show('longclick end', 1000);
-        });
+        // this.addEvent(LongClickManager.longClickEventTypes.START, '*', ({ target }) => {
+        //     ToastManager.show('longclick start', 1000);
+        // });
+        // this.addEvent(LongClickManager.longClickEventTypes.CANCELED, '*', ({ target }) => {
+        //     ToastManager.show('longclick canceled', 1000);
+        // });
+        // this.addEvent(LongClickManager.longClickEventTypes.END, '*', ({ target }) => {
+        //     ToastManager.show('longclick end', 1000);
+        // });
     }
 
     template() {

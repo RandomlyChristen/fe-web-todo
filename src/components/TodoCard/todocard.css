@@ -1,4 +1,5 @@
 [data-component="TodoCard"] {
+    position: relative;
     width: 230px;
     background: #FFFFFF;
     box-shadow: 0 1px 30px rgba(224, 224, 224, 0.5);
@@ -122,4 +123,39 @@
 
 .edit .todocard-author {
     display: none;
+}
+
+.progress-click{
+    position: absolute;
+    background-color: aqua;
+    height: 100%;
+    left: 0;
+    top: 0;
+}
+
+.progress-click.on {
+    background-color: #FF8886;
+    opacity: 0.5;
+    animation: progress 0.8s linear;
+    animation-fill-mode: forwards;
+}
+
+@keyframes progress{
+    from { width: 0%; }
+    to { width: 100%; }
+}
+
+[data-component="TodoCard"][data-todo-id="-1"] {
+    opacity: 0 !important;
+    height: 100px
+}
+
+.pending [data-component="TodoCard"] {
+    animation: pending-animation 0.3s linear alternate infinite;
+}
+
+@keyframes pending-animation {
+    0% { opacity: 1 }
+    20% { opacity: 0.7 }
+    100% { opacity: 0.4 }
 }

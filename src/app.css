@@ -16,3 +16,7 @@ button:hover:not([disabled]) {
 button {
     transition: 0.1s;
 }
+
+.pending {
+    pointer-events: none;
+}

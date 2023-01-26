@@ -3,11 +3,6 @@
     width: 250px;
 }
 
-[data-todo-id="-1"] {
-    opacity: 0;
-    height: 100px
-}
-
 .todoholder-header {
     display: flex;
     justify-content: space-between;
