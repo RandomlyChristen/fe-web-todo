@@ -9,7 +9,8 @@ dragging > * {
 }
 
 toast {
-    background-color: #262626;
+    pointer-events: none;
+    background-color: #3a3a3a;
     border-radius: 2em;
     color: white;
     text-align: center;
